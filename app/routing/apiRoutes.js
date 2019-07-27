@@ -1,6 +1,6 @@
 // Pull in required dependencies
 var path = require('path');
-
+var fs = require('fs');
 // Import the list of friend entries
 var friends = require('../data/friends.js');
 
@@ -38,7 +38,7 @@ module.exports = function (app) {
           
 
             // If lowest difference, record the friend match
-            if (diff < totalDifference) {
+            if (diff < totalDifference || friends.length === 0) {
                 
                 totalDifference = diff;
                 matchName = friends[i].name;
@@ -48,8 +48,17 @@ module.exports = function (app) {
 
         // Add new user
         friends.push(userInput);
+        console.log("friends", friends);
+
+        fs.appendFile('friendlist.txt',JSON.stringify(friends),(err, data) => {
+            if (err){
+                console.log(err)
+            }
+            console.log("Finished writing file")
+
+        });
 
         // Send appropriate response
-        res.json({ status: 'OK', matchName: matchName, matchImage: matchImage });
+        res.json({ status: 'OK', matchName, matchImage });
     });
 };
